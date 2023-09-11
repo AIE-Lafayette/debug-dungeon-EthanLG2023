@@ -31,7 +31,7 @@ namespace HelloDungeon
                 "\n They offer you a potion. Do you accept?","Yes ", "No" );
            
             //If the player drinks the potion...
-            if (input == "1")
+            if (input == "1" || input == "Yes" || input == "1.Yes")
             {
                 //...kill the player
                 Console.WriteLine("It was posion!! Ya dead shuuuunnnnn");
@@ -39,17 +39,13 @@ namespace HelloDungeon
                 gameOver = true;
             }
             //Otherwise if they do not...
-            else if (input == "2")
+            else if (input == "2" || input == "No" || input == "1.No")
             {
                 //...display text to let the player know that they survived the first room
                 Console.WriteLine("You decide to follow your gut and decline. You move on to the next area.");
                 Console.ReadKey(true);
             }
-            else
-            {
-                Console.WriteLine("Invalid input");
-                Console.ReadKey(true);
-            }
+
 
         }
 
@@ -65,7 +61,7 @@ namespace HelloDungeon
             for (int i = 0; i < numberOfAttempts; i--)
             {
                 Console.Clear();
-            }
+
 
                 //Draws monkey character 
                 Console.WriteLine("     __\n" +
@@ -93,28 +89,35 @@ namespace HelloDungeon
                 input = Console.ReadLine();
 
                 //If the player answered correctly...
-                if (input == "egg")
+                if (input.ToLower() == "egg")
                 {
                     //...print text for feedback and break the loop
                     Console.WriteLine("Congrats! You've gained immortality!");
                     Console.ReadKey();
+                    return;
+                }
+                
+                //If the player has died after guessing
+                else if (health <= 0)
+                {
+                    //...update the player state and print player feedback to the screen
+                    Console.WriteLine("You died...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    playerIsAlive = false;
+                    gameOver = true;
+                    return;
                 }
 
                 //If the player doesn't answer correctly deal damage to them
-                Console.WriteLine("Incorrect! The monkey laughs at you! It hurts..." +
+                else
+                {
+                    Console.WriteLine("Incorrect! The monkey laughs at you! It hurts..." +
                     "you take 5 points of damage.");
-                Console.ReadKey();
-                health -= 5;
-            
-
-            //If the player has died after guessing
-            if (health <= 0)
-            {
-                //...update the player state and print player feedback to the screen
-                playerIsAlive = false;
-                Console.WriteLine("You died...");
-                Console.ReadKey();
-                Console.Clear();
+                    Console.ReadKey();
+                    health -= 5;
+                }
+                
             }
         }
 
@@ -127,15 +130,16 @@ namespace HelloDungeon
             string input = GetInput("Would you like to play again?", "Yes", "No");
 
             //If the player decides to restart...
-            if (input == "1")
+            if (input == "1" || input == "Yes" || input == "1.Yes")
             {
                 //...set their current area to be the start and update the player state to be alive
                 currentArea = 1;
                 gameOver = false;
                 playerIsAlive = true;
+                health = 20;
             }
             //Otherwise if the player wants to quit...
-            else if (input == "2")
+            else if (input == "2" || input == "No" || input == "1.No")
             {
                 //...set game over to be true
                 gameOver = true;
@@ -166,7 +170,7 @@ namespace HelloDungeon
             string inputReceived = "";
 
             //While input is not 1 or 2 display the options
-            while (!(inputReceived != "" && inputReceived != ""))
+            while (inputReceived != "1" && inputReceived != "2")
             {
                 //Print options
                 Console.Write(description);
@@ -178,16 +182,16 @@ namespace HelloDungeon
                 input = Console.ReadLine();
 
                 //If player selected the first option...
-                if (input == "1" || input == option1)
+                if (input == "1" || input.ToLower() == "yes")
                 {
                     //Set input received to be the first option
-                    inputReceived = "";
+                    inputReceived = "1";
                 }
                 //Otherwise if the player selected the second option...
-                if (input == "2" || input == option2)
+                else if (input == "2" || input.ToLower() == "no")
                 {
                     //Set input received to be the second option
-                    inputReceived = "";
+                    inputReceived = "2";
                 }
                 //If neither are true...
                 else
@@ -212,16 +216,26 @@ namespace HelloDungeon
                 if (currentArea == 1)
                 {
                     Room1();
+                    if (gameOver == true)
+                    {
+                        return;
+                    }
+                    currentArea++;
                 }
                 if (currentArea == 2)
                 {
                     Room2();
+                    if (gameOver == true)
+                    {
+                        return;
+                    }
+                    currentArea++;
                 }
                 if (currentArea == 3)
                 {
                     Room3();
                 }
-            }
+            
                 //If the player lost or beat the game...
                 if (playerIsAlive == false || currentArea == 3)
                 {
@@ -234,7 +248,7 @@ namespace HelloDungeon
                     //...increment the current area
                     currentArea++;
                 }
-            
+            }
         }
     }
 }
